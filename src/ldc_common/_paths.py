@@ -2,8 +2,6 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-import sys
-import os
 
 @dataclass
 class Paths:
@@ -11,40 +9,51 @@ class Paths:
     work_dir_name: str
     root_dir: Path
     rollback_dir: Path
+
     download_dir: Path
     usb_dir: Path
     certs_dir: Path
     dev_info_dir: Path
+
     db_set: Path
     db_rtd: Path
     db_arc_dir: Path
     db_lan: Path
     db_prg: Path
 
-def _compute_paths() -> Paths:
-    if getattr(sys, "frozen", False):
-        exe_folder = Path(sys.executable).parent
-    else:
-        exe_folder = Path(__file__).resolve().parent
 
-    work_dir = exe_folder.parent
-    root_dir = work_dir.parent
+def _compute_paths() -> Paths:
+    # /home/lg58 (o qualunque utente stia eseguendo il processo)
+    home = Path.home()
+
+    # /home/lg58/LDC-100
+    work_dir = home / "LDC-100"
+    work_dir_name = work_dir.name      # "LDC-100"
+
+    # /home/lg58
+    root_dir = home
+
+    # /home/lg58/LDC-100/data
+    data_root = work_dir / "data"
 
     return Paths(
         work_dir=work_dir,
-        work_dir_name=work_dir.name,
+        work_dir_name=work_dir_name,
         root_dir=root_dir,
         rollback_dir=root_dir / "rollback",
+
         download_dir=Path("/opt/updates/download"),
         usb_dir=Path("/opt/updates/usb"),
         certs_dir=Path("/opt/aws-iot/certs"),
         dev_info_dir=Path("/opt/aws-iot/device-info"),
-        db_set=Path("/data/settings.db"),
-        db_rtd=Path("/data/rtd.db"),
-        db_arc_dir=Path("/data/"),
-        db_lan=Path("/data/language.db"),
-        db_prg=Path("/data/prg.db"),
+
+        db_set=data_root / "settings.db",
+        db_rtd=data_root / "rtd.db",
+        db_arc_dir=data_root,
+        db_lan=data_root / "language.db",
+        db_prg=data_root / "prg.db",
     )
+
 
 PATHS = _compute_paths()
 
